@@ -1,8 +1,11 @@
 package main
 
 import (
-	"log"
+	"crypto/sha256"
+	"fmt"
 	"path/filepath"
+	"sort"
+	"strconv"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -30,7 +33,12 @@ func dataSourceGlobRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
-	log.Println(items)
+	sort.Strings(items)
+	var elemhash string
+	for i, s := range items {
+		elemhash += strconv.Itoa(i) + s
+	}
+	d.SetId(fmt.Sprintf("%x", sha256.Sum256([]byte(elemhash))))
 	d.Set("matches", items)
 	return nil
 }
