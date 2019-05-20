@@ -1,3 +1,3 @@
-resource "glob_list" "some-directory" {
-  directory = "."
+data "glob_list" "some-directory" {
+  pattern = "./*"
 }

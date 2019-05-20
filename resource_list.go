@@ -1,37 +1,36 @@
 package main
 
 import (
+	"log"
+	"path/filepath"
+
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceGlob() *schema.Resource {
+func dataSourceGlob() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceGlobCreate,
-		Read:   resourceGlobRead,
-		Update: resourceGlobUpdate,
-		Delete: resourceGlobDelete,
-
+		Read: dataSourceGlobRead,
 		Schema: map[string]*schema.Schema{
-			"directory": &schema.Schema{
+			"pattern": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+			},
+			"matches": &schema.Schema{
+				Type:     schema.TypeList,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Computed: true,
 			},
 		},
 	}
 }
 
-func resourceGlobCreate(d *schema.ResourceData, m interface{}) error {
-	return resourceGlobRead(d, m)
-}
-
-func resourceGlobRead(d *schema.ResourceData, m interface{}) error {
-	return nil
-}
-
-func resourceGlobUpdate(d *schema.ResourceData, m interface{}) error {
-	return resourceGlobRead(d, m)
-}
-
-func resourceGlobDelete(d *schema.ResourceData, m interface{}) error {
+func dataSourceGlobRead(d *schema.ResourceData, m interface{}) error {
+	p := d.Get("pattern").(string)
+	items, err := filepath.Glob(p)
+	if err != nil {
+		return err
+	}
+	log.Println(items)
+	d.Set("matches", items)
 	return nil
 }

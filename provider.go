@@ -7,8 +7,8 @@ import (
 // Provider contains the definitions that make this a provider
 func Provider() *schema.Provider {
 	return &schema.Provider{
-		ResourcesMap: map[string]*schema.Resource{
-			"glob_list": resourceGlob(),
+		DataSourcesMap: map[string]*schema.Resource{
+			"glob_list": dataSourceGlob(),
 		},
 	}
 }
