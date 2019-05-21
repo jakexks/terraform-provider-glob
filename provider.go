@@ -8,7 +8,8 @@ import (
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		DataSourcesMap: map[string]*schema.Resource{
-			"glob_list": dataSourceGlob(),
+			"glob_list": dataSourceGlobList(),
+			"glob_map":  dataSourceGlobMap(),
 		},
 	}
 }

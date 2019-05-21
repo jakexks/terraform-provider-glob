@@ -10,9 +10,9 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func dataSourceGlob() *schema.Resource {
+func dataSourceGlobList() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceGlobRead,
+		Read: dataSourceGlobListRead,
 		Schema: map[string]*schema.Schema{
 			"pattern": &schema.Schema{
 				Type:     schema.TypeString,
@@ -27,7 +27,7 @@ func dataSourceGlob() *schema.Resource {
 	}
 }
 
-func dataSourceGlobRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceGlobListRead(d *schema.ResourceData, m interface{}) error {
 	p := d.Get("pattern").(string)
 	items, err := filepath.Glob(p)
 	if err != nil {
