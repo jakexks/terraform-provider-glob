@@ -3,16 +3,16 @@ package main
 import (
 	"crypto/sha256"
 	"fmt"
+	"io/ioutil"
 	"path/filepath"
 	"sort"
-	"strconv"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func dataSourceGlobList() *schema.Resource {
+func dataSourceGlobContentsList() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceGlobListRead,
+		Read: dataSourceGlobContentsListRead,
 		Schema: map[string]*schema.Schema{
 			"pattern": &schema.Schema{
 				Type:     schema.TypeString,
@@ -27,18 +27,24 @@ func dataSourceGlobList() *schema.Resource {
 	}
 }
 
-func dataSourceGlobListRead(d *schema.ResourceData, m interface{}) error {
+func dataSourceGlobContentsListRead(d *schema.ResourceData, m interface{}) error {
 	p := d.Get("pattern").(string)
 	items, err := filepath.Glob(p)
 	if err != nil {
 		return err
 	}
 	sort.Strings(items)
-	var elemhash string
-	for i, s := range items {
-		elemhash += strconv.Itoa(i) + s
+	var totalcontents string
+	var contents []string
+	for _, s := range items {
+		file, err := ioutil.ReadFile(s)
+		if err != nil {
+			return err
+		}
+		contents = append(contents, string(file))
+		totalcontents += string(file)
 	}
-	d.SetId(fmt.Sprintf("%x", sha256.Sum256([]byte(elemhash))))
-	d.Set("matches", items)
+	d.SetId(fmt.Sprintf("%x", sha256.Sum256([]byte(totalcontents))))
+	d.Set("matches", contents)
 	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"regexp"
 	"sort"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -47,8 +48,12 @@ func dataSourceGlobMapRead(d *schema.ResourceData, m interface{}) error {
 		allcontents += string(f)
 	}
 	filemap := make(map[string]interface{})
+
+	// Due to https://github.com/hashicorp/terraform/issues/10876 map keys can't contain characters like "."
+	sanitise := regexp.MustCompile("[[:^word:]]")
+
 	for i, match := range matches {
-		filemap[match] = contents[i]
+		filemap[sanitise.ReplaceAllString(match, "-")] = contents[i]
 	}
 
 	d.SetId(fmt.Sprintf("%x", sha256.Sum256([]byte(allcontents))))
