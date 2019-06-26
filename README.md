@@ -18,12 +18,10 @@ Install the provider:
 go get -u github.com/jakexks/terraform-provider-glob
 ```
 
-Edit ~/.terraformrc:
+Copy the provider to the user plugins directory:
 
 ```
-providers {
-  glob = "/bin/terraform-provider-glob" # or /path/to/terraform-provider-glob
-}
+mv ~/go/bin/terraform-provider-glob ~/.terraform.d/plugins # on Windows systems, move to %APPDATA%\terraform.d\plugins instead
 ```
 
 Use the provider:
